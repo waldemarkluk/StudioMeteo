@@ -14,6 +14,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import pl.socewicz.kluk.util.HTMLParser;
+
 public class SyncSelectionAdapter extends SelectionAdapter {
 	StyledText log;
 	
@@ -32,10 +34,6 @@ public class SyncSelectionAdapter extends SelectionAdapter {
 	}
 	
 	private void downloadFromPogodynka() throws SAXException, IOException, URISyntaxException, ParserConfigurationException{
-		String link="http://pogodynka.pl/polska/16dni/krakow_krakow";
-		URI cos = new URI(link);
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document doc = builder.parse(cos.toASCIIString());
+		HTMLParser pars = new HTMLParser();
 	}
 }
