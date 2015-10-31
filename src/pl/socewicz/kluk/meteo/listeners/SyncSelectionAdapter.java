@@ -14,7 +14,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import pl.socewicz.kluk.util.HTMLParser;
+import pl.socewicz.kluk.util.HTMLParserEkologia;
+import pl.socewicz.kluk.util.HTMLParserPogodynka;
 
 public class SyncSelectionAdapter extends SelectionAdapter {
 	StyledText log;
@@ -27,13 +28,14 @@ public class SyncSelectionAdapter extends SelectionAdapter {
 	public void widgetSelected(SelectionEvent e){
 		super.widgetSelected(e);
 		log.append("Started parsing website...\r\n");
-		try{downloadFromPogodynka();}
+		try{downloadData();}
 		catch(Exception exc){log.append(exc.getMessage()+"\r\n");log.append("Failed, while parsing\r\n");return;}
 		log.append("Website parse success!\r\n");
 		
 	}
 	
-	private void downloadFromPogodynka() throws SAXException, IOException, URISyntaxException, ParserConfigurationException{
-		HTMLParser pars = new HTMLParser();
+	private void downloadData() throws SAXException, IOException, URISyntaxException, ParserConfigurationException{
+		new HTMLParserPogodynka();
+		new HTMLParserEkologia();
 	}
 }

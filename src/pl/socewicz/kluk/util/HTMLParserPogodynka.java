@@ -18,8 +18,8 @@ import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.SimpleNodeIterator;
 
-public class HTMLParser {
-	public HTMLParser() {
+public class HTMLParserPogodynka {
+	public HTMLParserPogodynka() {
 		URL nbp;
 		FileWriter fileWriter = null;
 		
@@ -32,8 +32,8 @@ public class HTMLParser {
 			String predictionDate = "";
 			String time = "";
 			String temp = "";
-			String wind = "";
 			String pressure = "";
+			String wind = "";
 			String currentCSVLine = "";
 			
 			TagNameFilter tr = new TagNameFilter("tr");
@@ -58,10 +58,10 @@ public class HTMLParser {
 				else{
 					time = currentNode.getChildren().elementAt(1).getChildren().elementAt(0).getText().replaceAll("\\s","");;
 					temp = currentNode.getChildren().elementAt(3).getChildren().elementAt(1).getChildren().elementAt(0).getText().split(" ")[0].replaceAll("\\s","");
-					wind = currentNode.getChildren().elementAt(5).getChildren().elementAt(0).getText().split(" ")[0].replaceAll("\\s","");
-					pressure = currentNode.getChildren().elementAt(7).getChildren().elementAt(3).getChildren().elementAt(0).getText().split(" ")[0].replaceAll("\\s","");
+					pressure = currentNode.getChildren().elementAt(5).getChildren().elementAt(0).getText().split(" ")[0].replaceAll("\\s","");
+					wind = currentNode.getChildren().elementAt(7).getChildren().elementAt(3).getChildren().elementAt(0).getText().split(" ")[0].replaceAll("\\s","");
 					
-					currentCSVLine = String.format("%s,%s,%s,%s,%s,%s", today, predictionDate, time, temp, wind, pressure) + System.getProperty("line.separator");
+					currentCSVLine = String.format("%s,%s,%s,%s,%s,%s", today, predictionDate, time, temp, pressure, wind) + System.getProperty("line.separator");
 					currentCSVLine.toString();
 					fileWriter.append(currentCSVLine);
 				}
