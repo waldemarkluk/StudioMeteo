@@ -16,6 +16,7 @@ import org.xml.sax.SAXException;
 
 import pl.socewicz.kluk.util.HTMLParserEkologia;
 import pl.socewicz.kluk.util.HTMLParserPogodynka;
+import pl.socewicz.kluk.util.HTMLParserPomiary;
 
 public class SyncSelectionAdapter extends SelectionAdapter {
 	StyledText log;
@@ -35,6 +36,12 @@ public class SyncSelectionAdapter extends SelectionAdapter {
 	}
 	
 	private void downloadData() throws SAXException, IOException, URISyntaxException, ParserConfigurationException{
+		try {
+			new HTMLParserPomiary();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		new HTMLParserPogodynka();
 		new HTMLParserEkologia();
 	}
