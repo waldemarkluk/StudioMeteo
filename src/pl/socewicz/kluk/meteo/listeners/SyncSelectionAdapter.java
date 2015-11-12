@@ -1,20 +1,17 @@
 package pl.socewicz.kluk.meteo.listeners;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import pl.socewicz.kluk.util.HTMLParserEkologia;
+import pl.socewicz.kluk.util.HTMLParserMeteo;
 import pl.socewicz.kluk.util.HTMLParserPogodynka;
 import pl.socewicz.kluk.util.HTMLParserPomiary;
 
@@ -42,6 +39,7 @@ public class SyncSelectionAdapter extends SelectionAdapter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		new HTMLParserMeteo();
 		new HTMLParserPogodynka();
 		new HTMLParserEkologia();
 	}
