@@ -1,5 +1,8 @@
 package pl.socewicz.kluk.meteo;
 
+import java.io.IOException;
+import java.text.ParseException;
+
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.StatusLineManager;
 import org.eclipse.jface.text.TextViewer;
@@ -14,8 +17,16 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.jfree.ui.RefineryUtilities;
 
+import pl.socewicz.kluk.meteo.charts.LineChartFall;
+import pl.socewicz.kluk.meteo.charts.LineChartPressure;
+import pl.socewicz.kluk.meteo.charts.LineChartTemp;
+import pl.socewicz.kluk.meteo.charts.LineChartWind;
 import pl.socewicz.kluk.meteo.listeners.SyncSelectionAdapter;
+
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 
 public class MainWindow extends ApplicationWindow {
 	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
@@ -58,9 +69,93 @@ public class MainWindow extends ApplicationWindow {
 		
 		Button btnSync = new Button(container, SWT.NONE);
 		btnSync.addSelectionListener(new SyncSelectionAdapter(styledText));
-		btnSync.setBounds(95, 52, 231, 60);
+		btnSync.setBounds(109, 10, 231, 60);
 		formToolkit.adapt(btnSync, true, true);
 		btnSync.setText("Zbierz dane");
+		
+		Button btnVisualize = new Button(container, SWT.NONE);
+		btnVisualize.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LineChartTemp tempChart;
+				try {
+					tempChart = new LineChartTemp("Wykres - Temperatura");
+					tempChart.pack();
+			        RefineryUtilities.centerFrameOnScreen(tempChart);
+			        tempChart.setVisible(true);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				} 
+			}
+		});
+		btnVisualize.setText("Temperatura");
+		btnVisualize.setBounds(52, 76, 80, 47);
+		formToolkit.adapt(btnVisualize, true, true);
+		
+		Button btnWiatr = new Button(container, SWT.NONE);
+		btnWiatr.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LineChartWind tempChart;
+				try {
+					tempChart = new LineChartWind("Wykres - Wiatr");
+					tempChart.pack();
+			        RefineryUtilities.centerFrameOnScreen(tempChart);
+			        tempChart.setVisible(true);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				} 
+			}
+		});
+		btnWiatr.setText("Wiatr");
+		btnWiatr.setBounds(225, 76, 80, 47);
+		formToolkit.adapt(btnWiatr, true, true);
+		
+		Button btnCi = new Button(container, SWT.NONE);
+		btnCi.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LineChartPressure tempChart;
+				try {
+					tempChart = new LineChartPressure("Wykres - Ci\u015Bnienie");
+					tempChart.pack();
+			        RefineryUtilities.centerFrameOnScreen(tempChart);
+			        tempChart.setVisible(true);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				} 
+			}
+		});
+		btnCi.setText("Ci\u015Bnienie");
+		btnCi.setBounds(311, 76, 80, 47);
+		formToolkit.adapt(btnCi, true, true);
+		
+		Button btnOpad = new Button(container, SWT.NONE);
+		btnOpad.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				LineChartFall tempChart;
+				try {
+					tempChart = new LineChartFall("Wykres - Opad");
+					tempChart.pack();
+			        RefineryUtilities.centerFrameOnScreen(tempChart);
+			        tempChart.setVisible(true);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				} 
+			}
+		});
+		btnOpad.setText("Opad");
+		btnOpad.setBounds(138, 76, 81, 47);
+		formToolkit.adapt(btnOpad, true, true);
 		return container;
 	}
 
