@@ -78,7 +78,7 @@ public class LineChartWind extends ApplicationFrame {
 			else{
 				temps.put(df.parse(date), currWind);
 				
-				currWind = Double.parseDouble(nextLine[5]);
+				currWind = Double.parseDouble(nextLine[5])*3.6;
 				date = nextLine[1];
 			}
         }
@@ -106,8 +106,8 @@ public class LineChartWind extends ApplicationFrame {
 	
     private JFreeChart createChart(final CategoryDataset dataset) {
         final JFreeChart chart = ChartFactory.createLineChart(
-            "Porównanie danych - Wiatr", 
-            "Dzieñ",             
+            "Porï¿½wnanie danych - Wiatr", 
+            "Dzieï¿½",             
             "Wiatr [km/h]",              
             dataset,           
             PlotOrientation.VERTICAL,
