@@ -33,14 +33,14 @@ public class SyncSelectionAdapter extends SelectionAdapter {
 	}
 	
 	private void downloadData() throws SAXException, IOException, URISyntaxException, ParserConfigurationException{
-		try {
-			new HTMLParserPomiary();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		new HTMLParserMeteo();
-		new HTMLParserPogodynka();
-		new HTMLParserEkologia();
+//		try {
+//			new HTMLParserPomiary();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		new HTMLParserPogodynka();
+//		new HTMLParserEkologia();
 	}
 }

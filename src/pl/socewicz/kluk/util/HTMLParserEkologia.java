@@ -22,7 +22,7 @@ public class HTMLParserEkologia {
 		FileWriter fileWriter = null;
 		
 		try {
-			fileWriter = new FileWriter("ekologia.csv");
+			fileWriter = new FileWriter("ekologia.csv", true);
 			NodeList list;
 			Node currentNode;
 			

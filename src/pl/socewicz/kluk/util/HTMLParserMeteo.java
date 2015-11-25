@@ -27,7 +27,7 @@ public class HTMLParserMeteo {
 		
 		
 		try {
-			fileWriter = new FileWriter("meteo.csv");
+			fileWriter = new FileWriter("meteo.csv", true);
 			URL url = new URL("http://www.meteo.pl/metco/mgram_pict.php?ntype=2n&fdate="+timestamp+hour+"&row=151&col=91&lang=pl");
 			InputStream in = new BufferedInputStream(url.openStream());
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -45,8 +45,22 @@ public class HTMLParserMeteo {
 			fos.close();
 			BufferedImage img = null;
 			img = ImageIO.read(new File("obrazek.png"));
-			System.out.println("szerokosc: " + img.getWidth());
-			System.out.println("wysokosc: " + img.getHeight());
+			int szerokosc = img.getWidth();
+			int wysokosc = img.getHeight();
+			boolean skok=false;
+			wyjscie:
+			for(int i=0; i<szerokosc; i++){
+				if (skok==true)
+					break;
+				for(int j=0; j<wysokosc; j++){
+					int kolor[] = getPixelColor(i, j, img);
+					if (kolor[0]>200 && (kolor[1]+kolor[2]<100)){
+						System.out.println("i: "+i+", j: "+j);
+						skok=true;
+						break wyjscie;
+					}
+				}
+			}
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -83,5 +97,18 @@ public class HTMLParserMeteo {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);    
         return dateFormat.format(cal.getTime());
+	}
+	
+	public static int[] getPixelColor(int x, int y, BufferedImage img){
+	  // Getting pixel color by position x and y 
+	  int clr=  img.getRGB(x,y); 
+	  int  red   = (clr & 0x00ff0000) >> 16;
+	  int  green = (clr & 0x0000ff00) >> 8;
+	  int  blue  =  clr & 0x000000ff;
+	  int color[]={1,2,3};
+	  color[0]=red; 
+	  color[1]=green; 
+	  color[2]=blue;
+	  return color;
 	}
 }

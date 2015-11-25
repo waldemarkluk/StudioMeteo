@@ -24,7 +24,7 @@ public class HTMLParserPogodynka {
 		FileWriter fileWriter = null;
 		
 		try {
-			fileWriter = new FileWriter("pogodynka.csv");
+			fileWriter = new FileWriter("pogodynka.csv",true);
 			NodeList list;
 			Node currentNode;
 			

@@ -110,8 +110,8 @@ public class LineChartTemp extends ApplicationFrame {
         
         // create the chart...
         final JFreeChart chart = ChartFactory.createLineChart(
-            "Porównanie danych - Temperatura", 
-            "Dzieñ",             
+            "Porï¿½wnanie danych - Temperatura", 
+            "Dzieï¿½",             
             "Temp. [\u00B0C]",              
             dataset,           
             PlotOrientation.VERTICAL,

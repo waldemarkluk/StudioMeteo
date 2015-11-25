@@ -30,7 +30,7 @@ public class HTMLParserPomiary {
     private String charset = "UTF-8";
     private String loginQuery = "";
 
-	FileWriter fileWriter = new FileWriter("pomiary.csv");
+	FileWriter fileWriter = new FileWriter("pomiary.csv", true);
     
     public static void main(String[] args) throws Exception {
       HTMLParserPomiary http = new HTMLParserPomiary();
