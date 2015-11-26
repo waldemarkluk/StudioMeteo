@@ -12,6 +12,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -21,15 +24,15 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.ui.ApplicationFrame;
 
 import com.opencsv.CSVReader;
 
-public class LineChartTemp extends ApplicationFrame {
+public class LineChartTemp extends JFrame {
 	private static final long serialVersionUID = -4619093118842552184L;
 
     public LineChartTemp(final String title) throws IOException, ParseException {
         super(title);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         final CategoryDataset dataset = createDataset();
         final JFreeChart chart = createChart(dataset);
         final ChartPanel chartPanel = new ChartPanel(chart);
@@ -39,28 +42,42 @@ public class LineChartTemp extends ApplicationFrame {
     
     private CategoryDataset createDataset() throws IOException, ParseException {
     	DateFormat format = new SimpleDateFormat("dd.MM");
-        // row keys...
-        //final String series1 = "Meteo";
+    	
+        final String series1 = "Meteo";
         final String series2 = "Ekologia";
         final String series3 = "Pogodynka";
 
-        // column keys...
         final Map<Date, Double> ekoTemp = getEkologiaTemp();
-        final Map<Date, Double> pogTemp = getPogodynkaTemp();        
+        final Map<Date, Double> pogTemp = getPogodynkaTemp();    
+        final Map<Date, Double> actTemp = getActualTemp();
         
-        // create the dataset...
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
-        for(Date x : ekoTemp.keySet()){
-        	dataset.addValue(ekoTemp.get(x), series2, format.format(x));
-        }
-        
-        for(Date x : pogTemp.keySet()){
-        	dataset.addValue(pogTemp.get(x), series3, format.format(x));
+        for(Date x : actTemp.keySet()){
+        	if(ekoTemp.get(x) != null && pogTemp.get(x) != null && actTemp != null){
+	        	dataset.addValue(actTemp.get(x), series1, format.format(x));
+	        	dataset.addValue(ekoTemp.get(x), series2, format.format(x));
+	        	dataset.addValue(pogTemp.get(x), series3, format.format(x));
+        	}
         }
         
         return dataset;
     }
+    
+    private Map<Date, Double> getActualTemp() throws IOException, NumberFormatException, ParseException {
+		Map<Date, Double> temps = new TreeMap<Date, Double>();
+		CSVReader reader = new CSVReader(new FileReader("pomiary.csv"));
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String [] nextLine;
+		
+    	while ((nextLine = reader.readNext()) != null) {
+    		temps.put(df.parse(nextLine[0]), Double.parseDouble(nextLine[2]));
+        }
+    	
+    	reader.close();
+    	
+		return temps;
+	}
     
     private Map<Date, Double> getPogodynkaTemp() throws NumberFormatException, IOException, ParseException {
     	DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
