@@ -43,21 +43,25 @@ public class LineChartWind extends JFrame {
     private CategoryDataset createDataset() throws IOException, ParseException {
     	DateFormat format = new SimpleDateFormat("dd.MM");
         
-        final String series1 = "Meteo";
+        final String series1 = "Pomiary";
         final String series2 = "Ekologia";
         final String series3 = "Pogodynka";
 
+        final String series4 = "Meteo";
+
         final Map<Date, Double> ekoWind = getEkologiaWind();
         final Map<Date, Double> pogWind = getPogodynkaWind();    
-        final Map<Date, Double> actWind = getActualWind();
+        final Map<Date, Double> actWind = getActualWind();   
+        final Map<Date, Double> metWind = getMeteoWind();
         
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
         for(Date x : actWind.keySet()){
-        	if(ekoWind.get(x) != null && pogWind.get(x) != null && actWind != null){
+        	if(ekoWind.get(x) != null && pogWind.get(x) != null && actWind != null && metWind != null){
 	        	dataset.addValue(actWind.get(x), series1, format.format(x));
 	        	dataset.addValue(ekoWind.get(x), series2, format.format(x));
 	        	dataset.addValue(pogWind.get(x), series3, format.format(x));
+	        	dataset.addValue(metWind.get(x), series4, format.format(x));
         	}
         }
         
@@ -71,7 +75,22 @@ public class LineChartWind extends JFrame {
 		String [] nextLine;
 		
     	while ((nextLine = reader.readNext()) != null) {
-    		temps.put(df.parse(nextLine[0]), Double.parseDouble(nextLine[1]));
+    		temps.put(df.parse(nextLine[0]), Double.parseDouble(nextLine[1])*3.6);
+        }
+    	
+    	reader.close();
+    	
+		return temps;
+	}
+    
+    private Map<Date, Double> getMeteoWind() throws NumberFormatException, IOException, ParseException {
+    	Map<Date, Double> temps = new TreeMap<Date, Double>();
+		CSVReader reader = new CSVReader(new FileReader("meteo.csv"));
+		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+		String [] nextLine;
+		
+    	while ((nextLine = reader.readNext()) != null) {
+    		temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[5]));
         }
     	
     	reader.close();
@@ -95,9 +114,9 @@ public class LineChartWind extends JFrame {
     				currWind = Double.parseDouble(nextLine[5]);
 			}
 			else{
-				temps.put(df.parse(date), currWind);
+				temps.put(df.parse(date), currWind*3.6);
 				
-				currWind = Double.parseDouble(nextLine[5])*3.6;
+				currWind = Double.parseDouble(nextLine[5]);
 				date = nextLine[1];
 			}
         }

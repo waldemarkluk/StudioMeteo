@@ -43,11 +43,14 @@ public class LineChartFall extends JFrame {
     private CategoryDataset createDataset() throws IOException, ParseException {
     	DateFormat format = new SimpleDateFormat("dd.MM");
     	
-        final String series1 = "Meteo";
+        final String series1 = "Pomiary";
         final String series2 = "Ekologia";
+        final String series4 = "Meteo";
 
         final Map<Date, Double> ekoFall = getEkologiaFall();    
         final Map<Date, Double> actFall = getActualFall();
+        
+        final Map<Date, Double> metFall = getMeteoFall();
         
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
@@ -55,6 +58,8 @@ public class LineChartFall extends JFrame {
         	if(actFall.get(x) != null && ekoFall.get(x) != null){
 	        	dataset.addValue(actFall.get(x), series1, format.format(x));
 	        	dataset.addValue(ekoFall.get(x), series2, format.format(x));
+
+	        	dataset.addValue(metFall.get(x), series4, format.format(x));
         	}
         }
         
@@ -75,6 +80,21 @@ public class LineChartFall extends JFrame {
     	
 		return temps;
 	}
+	
+	private Map<Date, Double> getMeteoFall() throws IOException, NumberFormatException, ParseException {
+		Map<Date, Double> temps = new TreeMap<Date, Double>();
+		CSVReader reader = new CSVReader(new FileReader("meteo.csv"));
+		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+		String [] nextLine;
+		
+    	while ((nextLine = reader.readNext()) != null) {
+    		temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6]));
+        }
+    	
+    	reader.close();
+    	
+		return temps;
+	}
 
 	private Map<Date, Double> getEkologiaFall() throws IOException, NumberFormatException, ParseException {
 		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
@@ -84,7 +104,10 @@ public class LineChartFall extends JFrame {
     	CSVReader reader = new CSVReader(new FileReader("ekologia.csv"));
     	
     	while ((nextLine = reader.readNext()) != null) {
-    		temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[5].split("%")[0]));
+    		if (nextLine[6].contains("Ã·"))
+    			temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6].split("Ã·")[1]));
+    		else
+    			temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6]));
         }
     	
     	reader.close();
@@ -96,8 +119,8 @@ public class LineChartFall extends JFrame {
         
         // create the chart...
         final JFreeChart chart = ChartFactory.createLineChart(
-            "Porównanie danych - Opad", 
-            "Dzieñ",             
+            "Porï¿½wnanie danych - Opad", 
+            "Dzieï¿½",             
             "Opad [mm/h]",              
             dataset,           
             PlotOrientation.VERTICAL,

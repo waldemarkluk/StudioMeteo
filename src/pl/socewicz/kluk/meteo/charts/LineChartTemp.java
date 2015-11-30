@@ -43,13 +43,15 @@ public class LineChartTemp extends JFrame {
     private CategoryDataset createDataset() throws IOException, ParseException {
     	DateFormat format = new SimpleDateFormat("dd.MM");
     	
-        final String series1 = "Meteo";
+        final String series1 = "Pomiary";
         final String series2 = "Ekologia";
         final String series3 = "Pogodynka";
+        final String series4 = "Meteo";
 
         final Map<Date, Double> ekoTemp = getEkologiaTemp();
         final Map<Date, Double> pogTemp = getPogodynkaTemp();    
-        final Map<Date, Double> actTemp = getActualTemp();
+        final Map<Date, Double> actTemp = getActualTemp();      
+        final Map<Date, Double> metTemp = getMeteoTemp();
         
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
@@ -58,6 +60,7 @@ public class LineChartTemp extends JFrame {
 	        	dataset.addValue(actTemp.get(x), series1, format.format(x));
 	        	dataset.addValue(ekoTemp.get(x), series2, format.format(x));
 	        	dataset.addValue(pogTemp.get(x), series3, format.format(x));
+	        	dataset.addValue(metTemp.get(x), series4, format.format(x));
         	}
         }
         
@@ -72,6 +75,21 @@ public class LineChartTemp extends JFrame {
 		
     	while ((nextLine = reader.readNext()) != null) {
     		temps.put(df.parse(nextLine[0]), Double.parseDouble(nextLine[2]));
+        }
+    	
+    	reader.close();
+    	
+		return temps;
+	}
+    
+    private Map<Date, Double> getMeteoTemp() throws IOException, NumberFormatException, ParseException {
+		Map<Date, Double> temps = new TreeMap<Date, Double>();
+		CSVReader reader = new CSVReader(new FileReader("meteo.csv"));
+		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+		String [] nextLine;
+		
+    	while ((nextLine = reader.readNext()) != null) {
+    		temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[3]));
         }
     	
     	reader.close();

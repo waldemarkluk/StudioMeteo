@@ -43,21 +43,24 @@ public class LineChartPressure extends JFrame {
     private CategoryDataset createDataset() throws IOException, ParseException {
     	DateFormat format = new SimpleDateFormat("dd.MM");
     	
-    	final String series1 = "Meteo";
+    	final String series1 = "Pomiary";
         final String series2 = "Ekologia";
         final String series3 = "Pogodynka";
+        final String series4 = "Meteo";
 
         final Map<Date, Double> ekoPress = getEkologiaPress();
         final Map<Date, Double> pogPress = getPogodynkaPress();    
-        final Map<Date, Double> actPress = getActualPress();
+        final Map<Date, Double> actPress = getActualPress(); 
+        final Map<Date, Double> metPress = getMeteoPress();
         
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
         for(Date x : actPress.keySet()){
-        	if(ekoPress.get(x) != null && pogPress.get(x) != null && actPress != null){
+        	if(ekoPress.get(x) != null && pogPress.get(x) != null && actPress != null && metPress != null){
 	        	dataset.addValue(actPress.get(x), series1, format.format(x));
 	        	dataset.addValue(ekoPress.get(x), series2, format.format(x));
 	        	dataset.addValue(pogPress.get(x), series3, format.format(x));
+	        	dataset.addValue(metPress.get(x), series4, format.format(x));
         	}
         }
         
@@ -72,6 +75,21 @@ public class LineChartPressure extends JFrame {
 		
     	while ((nextLine = reader.readNext()) != null) {
     		temps.put(df.parse(nextLine[0]), Double.parseDouble(nextLine[3]));
+        }
+    	
+    	reader.close();
+    	
+		return temps;
+	}
+    
+    private Map<Date, Double> getMeteoPress() throws NumberFormatException, IOException, ParseException {
+    	Map<Date, Double> temps = new TreeMap<Date, Double>();
+		CSVReader reader = new CSVReader(new FileReader("meteo.csv"));
+		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+		String [] nextLine;
+		
+    	while ((nextLine = reader.readNext()) != null) {
+    		temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[4]));
         }
     	
     	reader.close();
@@ -127,9 +145,9 @@ public class LineChartPressure extends JFrame {
         
         // create the chart...
         final JFreeChart chart = ChartFactory.createLineChart(
-            "Porównanie danych - Ciœnienie", 
-            "Dzieñ",             
-            "Ciœnienie [hPa]",              
+            "Porï¿½wnanie danych - Ciï¿½nienie", 
+            "Dzieï¿½",             
+            "Ciï¿½nienie [hPa]",              
             dataset,           
             PlotOrientation.VERTICAL,
             true,                  

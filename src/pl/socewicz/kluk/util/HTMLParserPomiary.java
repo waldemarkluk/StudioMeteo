@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -116,7 +117,7 @@ public class HTMLParserPomiary {
         StringBuffer response = new StringBuffer();
 
         while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
+        		response.append(inputLine);
         }
         in.close();
         System.out.println(response.toString());
@@ -194,8 +195,25 @@ public class HTMLParserPomiary {
         
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine+"\n");
-            if(inputLine.length()>0 && p.matcher(inputLine).matches())
-            	fileWriter.append(inputLine+"\n");
+            if(inputLine.length()>0 && p.matcher(inputLine).matches()){
+        		StringTokenizer st = new StringTokenizer(inputLine);
+        		StringBuilder inputCopy = new StringBuilder("");
+        		String token = new String("");
+        		int counter=0;
+        		while (st.hasMoreTokens()) {
+        			//System.out.println(st.nextToken());
+        			counter++;
+        			token = st.nextToken();
+
+            		System.out.println(inputCopy+" "+counter+"\n");
+        			if(counter == 2)
+        				token = st.nextToken();
+        			inputCopy.append(token);
+        			if(counter < 5)
+        				inputCopy.append(",");
+        		}
+            	fileWriter.append(inputCopy+"\n");
+            }
         }
         in.close();
 
