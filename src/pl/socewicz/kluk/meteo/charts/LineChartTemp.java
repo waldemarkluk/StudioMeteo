@@ -57,20 +57,26 @@ public class LineChartTemp extends JFrame {
         final Map<Date, Double> metTemp = getMeteoTemp();
         
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        Double summet = 0.0, sumeko = 0.0, sumpog = 0.0;
+        int ile = 0;
         
         for(Date x : actTemp.keySet()){
-        	if(ekoTemp.get(x) != null && pogTemp.get(x) != null && actTemp != null){
+        	if(ekoTemp.get(x) != null && pogTemp.get(x) != null && actTemp.get(x) != null){
 	        	dataset.addValue(actTemp.get(x), series1, format.format(x));
 	        	dataset.addValue(ekoTemp.get(x), series2, format.format(x));
 	        	dataset.addValue(pogTemp.get(x), series3, format.format(x));
-	        	dataset.addValue(metTemp.get(x), series4, format.format(x));
+	        	if(type == 0) dataset.addValue(metTemp.get(x), series4, format.format(x));
 	        	
-	        	System.out.print(String.format("B³¹d bezwzglêdny ekologia dla temperatury (%td.%tm.%tY): %f%n", x, x, x, Math.abs(actTemp.get(x) - ekoTemp.get(x))));
-	        	System.out.print(String.format("B³¹d bezwzglêdny pogodynka dla temperatury (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actTemp.get(x) - pogTemp.get(x))));
-	        	System.out.print(String.format("B³¹d bezwzglêdny meteo dla temperatury (%td.%tm.%tY): %f%n------------------------------------%n",x , x, x, Math.abs(actTemp.get(x) - metTemp.get(x))));
+	        	System.out.print(String.format("B³¹d bezwzglêdny ekologia dla temperatury (%td.%tm.%tY): %f%n", x, x, x, Math.abs(actTemp.get(x) - ekoTemp.get(x)))); sumeko += Math.abs(actTemp.get(x) - ekoTemp.get(x));
+	        	System.out.print(String.format("B³¹d bezwzglêdny pogodynka dla temperatury (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actTemp.get(x) - pogTemp.get(x)))); sumpog += Math.abs(actTemp.get(x) - pogTemp.get(x));
+	        	if(type == 0) System.out.print(String.format("B³¹d bezwzglêdny meteo dla temperatury (%td.%tm.%tY): %f%n------------------------------------%n",x , x, x, Math.abs(actTemp.get(x) - metTemp.get(x)))); if(type == 0) summet += Math.abs(actTemp.get(x) - metTemp.get(x));
 	        	
+	        	ile++;
         	}
         }
+        System.out.print(String.format("Œredni b³¹d bezwzglêdny dla ekologii: %f%n", (sumeko/(double)ile)));
+        System.out.print(String.format("Œredni b³¹d bezwzglêdny dla pogodynki: %f%n", (sumpog/(double)ile)));
+        if(type == 0) System.out.print(String.format("Œredni b³¹d bezwzglêdny dla meteo: %f%n", (summet/(double)ile)));
         
         return dataset;
     }

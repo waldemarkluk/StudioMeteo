@@ -54,17 +54,24 @@ public class LineChartFall extends JFrame {
         final Map<Date, Double> metFall = getMeteoFall();
         
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        Double summet = 0.0, sumeko = 0.0;
+        int ile = 0;
         
         for(Date x : actFall.keySet()){
-        	if((actFall.get(x) != null && ekoFall.get(x) != null)  ){
+        	if((actFall.get(x) != null && ekoFall.get(x) != null)){
 	        	dataset.addValue(actFall.get(x), series1, format.format(x));
 	        	dataset.addValue(ekoFall.get(x), series2, format.format(x));
-	        	dataset.addValue(metFall.get(x), series4, format.format(x));
+	        	if(type == 0) dataset.addValue(metFall.get(x), series4, format.format(x));
 	        	
-	        	System.out.print(String.format("B³¹d bezwzglêdny meteo dla opadu (%td.%tm.%tY): %f%n",x ,x, x, Math.abs(actFall.get(x) - metFall.get(x))));
-	        	System.out.print(String.format("B³¹d bezwzglêdny ekologia dla opadu (%td.%tm.%tY): %f%n------------------------------------%n",x ,x, x, Math.abs(actFall.get(x) - ekoFall.get(x))));
+	        	if(type == 0) System.out.print(String.format("B³¹d bezwzglêdny meteo dla opadu (%td.%tm.%tY): %f%n",x ,x, x, Math.abs(actFall.get(x) - metFall.get(x)))); if(type == 0) summet += Math.abs(actFall.get(x) - metFall.get(x));
+	        	System.out.print(String.format("B³¹d bezwzglêdny ekologia dla opadu (%td.%tm.%tY): %f%n------------------------------------%n",x ,x, x, Math.abs(actFall.get(x) - ekoFall.get(x))));sumeko += Math.abs(actFall.get(x) - ekoFall.get(x));
+        	
+	        	ile++;
         	}
         }
+        
+        if(type == 0) System.out.print(String.format("Œredni b³¹d bezwzglêdny dla meteo: %f%n", (summet/(double)ile)));
+        System.out.print(String.format("Œredni b³¹d bezwzglêdny dla ekologii: %f%n", (sumeko/(double)ile)));
         
         return dataset;
     }

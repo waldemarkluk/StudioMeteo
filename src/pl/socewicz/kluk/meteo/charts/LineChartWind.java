@@ -58,19 +58,27 @@ public class LineChartWind extends JFrame {
         final Map<Date, Double> metWind = getMeteoWind();
         
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        Double summet = 0.0, sumeko = 0.0, sumpog = 0.0;
+        int ile = 0;
         
         for(Date x : actWind.keySet()){
-        	if(ekoWind.get(x) != null && pogWind.get(x) != null && actWind != null && metWind != null){
+        	if(ekoWind.get(x) != null && pogWind.get(x) != null && actWind.get(x) != null){
 	        	dataset.addValue(actWind.get(x), series1, format.format(x));
 	        	dataset.addValue(ekoWind.get(x), series2, format.format(x));
 	        	dataset.addValue(pogWind.get(x), series3, format.format(x));
-	        	dataset.addValue(metWind.get(x), series4, format.format(x));
+	        	if(type == 0) dataset.addValue(metWind.get(x), series4, format.format(x));
 	        	
-	        	System.out.print(String.format("B³¹d bezwzglêdny ekologia dla wiatru (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actWind.get(x) - ekoWind.get(x))));
-	        	System.out.print(String.format("B³¹d bezwzglêdny pogodynka dla wiatru (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actWind.get(x) - pogWind.get(x))));
-	        	System.out.print(String.format("B³¹d bezwzglêdny meteo dla wiatru (%td.%tm.%tY): %f%n------------------------------------%n",x , x, x, Math.abs(actWind.get(x) - metWind.get(x))));
+	        	System.out.print(String.format("B³¹d bezwzglêdny ekologia dla wiatru (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actWind.get(x) - ekoWind.get(x)))); sumeko += Math.abs(actWind.get(x) - ekoWind.get(x));
+	        	System.out.print(String.format("B³¹d bezwzglêdny pogodynka dla wiatru (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actWind.get(x) - pogWind.get(x)))); sumpog += Math.abs(actWind.get(x) - pogWind.get(x));
+	        	if(type == 0) System.out.print(String.format("B³¹d bezwzglêdny meteo dla wiatru (%td.%tm.%tY): %f%n------------------------------------%n",x , x, x, Math.abs(actWind.get(x) - metWind.get(x)))); if(type == 0)summet += Math.abs(actWind.get(x) - metWind.get(x));
+	        	
+	        	ile++;
         	}
         }
+        
+        System.out.print(String.format("Œredni b³¹d bezwzglêdny dla ekologii: %f%n", (sumeko/(double)ile)));
+        System.out.print(String.format("Œredni b³¹d bezwzglêdny dla pogodynki: %f%n", (sumpog/(double)ile)));
+        if(type == 0) System.out.print(String.format("Œredni b³¹d bezwzglêdny dla meteo: %f%n", (summet/(double)ile)));
         
         return dataset;
     }
@@ -96,7 +104,27 @@ public class LineChartWind extends JFrame {
 		String [] nextLine;
 		
     	while ((nextLine = reader.readNext()) != null) {
-    		temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[5]));
+    		long timediff = TimeUnit.DAYS.convert(df.parse(nextLine[1]).getTime() - df.parse(nextLine[0]).getTime(), TimeUnit.MILLISECONDS);
+
+    		switch(type){
+	    		case 0:
+	    			if(timediff <= 3)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[5]));
+	    			break;
+	    		
+	    		case 1:
+	    			if(timediff >= 4 && timediff <= 7)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[5]));
+	    			break;
+	    		
+	    		case 2:
+	    			if(timediff >= 8 && timediff <= 14)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[5]));
+	    			break;
+	    		
+				default:
+					break;
+			}
         }
     	
     	reader.close();

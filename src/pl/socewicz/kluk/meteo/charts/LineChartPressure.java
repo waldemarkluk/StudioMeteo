@@ -58,19 +58,27 @@ public class LineChartPressure extends JFrame {
         final Map<Date, Double> metPress = getMeteoPress();
         
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        Double summet = 0.0, sumeko = 0.0, sumpog = 0.0;
+        int ile = 0;
         
         for(Date x : actPress.keySet()){
-        	if(ekoPress.get(x) != null && pogPress.get(x) != null && actPress != null && metPress != null){
+        	if(ekoPress.get(x) != null && pogPress.get(x) != null && actPress.get(x) != null){
 	        	dataset.addValue(actPress.get(x), series1, format.format(x));
 	        	dataset.addValue(ekoPress.get(x), series2, format.format(x));
 	        	dataset.addValue(pogPress.get(x), series3, format.format(x));
-	        	dataset.addValue(metPress.get(x), series4, format.format(x));
+	        	if(type == 0) dataset.addValue(metPress.get(x), series4, format.format(x));
 	        	
-	        	System.out.print(String.format("B³¹d bezwzglêdny ekologia dla ciœnienia (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actPress.get(x) - ekoPress.get(x))));
-	        	System.out.print(String.format("B³¹d bezwzglêdny pogodynka dla ciœnienia (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actPress.get(x) - pogPress.get(x))));
-	        	System.out.print(String.format("B³¹d bezwzglêdny meteo dla ciœnienia (%td.%tm.%tY): %f%n------------------------------------%n",x , x, x, Math.abs(actPress.get(x) - metPress.get(x))));
+	        	System.out.print(String.format("B³¹d bezwzglêdny ekologia dla ciœnienia (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actPress.get(x) - ekoPress.get(x)))); sumeko += Math.abs(actPress.get(x) - ekoPress.get(x));
+	        	System.out.print(String.format("B³¹d bezwzglêdny pogodynka dla ciœnienia (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actPress.get(x) - pogPress.get(x))));sumpog += Math.abs(actPress.get(x) - pogPress.get(x));
+	        	if(type == 0) System.out.print(String.format("B³¹d bezwzglêdny meteo dla ciœnienia (%td.%tm.%tY): %f%n------------------------------------%n",x , x, x, Math.abs(actPress.get(x) - metPress.get(x)))); if(type == 0) summet += Math.abs(actPress.get(x) - metPress.get(x));
+	        	
+	        	ile++;
         	}
         }
+        
+        System.out.print(String.format("Œredni b³¹d bezwzglêdny dla ekologii: %f%n", (sumeko/(double)ile)));
+        System.out.print(String.format("Œredni b³¹d bezwzglêdny dla pogodynki: %f%n", (sumpog/(double)ile)));
+        if(type == 0)  System.out.print(String.format("Œredni b³¹d bezwzglêdny dla meteo: %f%n", (summet/(double)ile)));
         
         return dataset;
     }
