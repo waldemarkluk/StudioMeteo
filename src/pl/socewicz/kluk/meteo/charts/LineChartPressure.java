@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
@@ -29,9 +30,12 @@ import com.opencsv.CSVReader;
 
 public class LineChartPressure extends JFrame {
 	private static final long serialVersionUID = -4619093118842552184L;
-
-    public LineChartPressure(final String title) throws IOException, ParseException {
+	int type = 0;
+	
+    public LineChartPressure(final String title, int type) throws IOException, ParseException {
         super(title);
+        
+        this.type = type;
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         final CategoryDataset dataset = createDataset();
         final JFreeChart chart = createChart(dataset);
@@ -61,6 +65,10 @@ public class LineChartPressure extends JFrame {
 	        	dataset.addValue(ekoPress.get(x), series2, format.format(x));
 	        	dataset.addValue(pogPress.get(x), series3, format.format(x));
 	        	dataset.addValue(metPress.get(x), series4, format.format(x));
+	        	
+	        	System.out.print(String.format("B³¹d bezwzglêdny ekologia dla ciœnienia (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actPress.get(x) - ekoPress.get(x))));
+	        	System.out.print(String.format("B³¹d bezwzglêdny pogodynka dla ciœnienia (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actPress.get(x) - pogPress.get(x))));
+	        	System.out.print(String.format("B³¹d bezwzglêdny meteo dla ciœnienia (%td.%tm.%tY): %f%n------------------------------------%n",x , x, x, Math.abs(actPress.get(x) - metPress.get(x))));
         	}
         }
         
@@ -89,7 +97,27 @@ public class LineChartPressure extends JFrame {
 		String [] nextLine;
 		
     	while ((nextLine = reader.readNext()) != null) {
-    		temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[4]));
+    		long timediff = TimeUnit.DAYS.convert(df.parse(nextLine[1]).getTime() - df.parse(nextLine[0]).getTime(), TimeUnit.MILLISECONDS);
+
+    		switch(type){
+	    		case 0:
+	    			if(timediff <= 3)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[4]));
+	    			break;
+	    		
+	    		case 1:
+	    			if(timediff >= 4 && timediff <= 7)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[4]));
+	    			break;
+	    		
+	    		case 2:
+	    			if(timediff >= 8 && timediff <= 14)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[4]));
+	    			break;
+	    		
+				default:
+					break;
+			}
         }
     	
     	reader.close();
@@ -105,15 +133,37 @@ public class LineChartPressure extends JFrame {
     	nextLine = reader.readNext();
     	Double currPress = Double.parseDouble(nextLine[4]);
     	String date = nextLine[1];
+    	Date thisdate = df.parse(nextLine[0]);
     			
     	while ((nextLine = reader.readNext()) != null) {
-    		
 			if(nextLine[1].equals(date)){
-    			if(Double.parseDouble(nextLine[4]) > currPress)
+    			if(Double.parseDouble(nextLine[4]) > currPress){
     				currPress = Double.parseDouble(nextLine[4]);
+    				thisdate = df.parse(nextLine[0]);
+    			}
 			}
 			else{
-				temps.put(df.parse(date), currPress);
+	    		long timediff = TimeUnit.DAYS.convert(df.parse(date).getTime() - thisdate.getTime(), TimeUnit.MILLISECONDS);
+
+	    		switch(type){
+		    		case 0:
+		    			if(timediff <= 3)
+		    				temps.put(df.parse(date), currPress);
+		    			break;
+		    		
+		    		case 1:
+		    			if(timediff >= 4 && timediff <= 7)
+		    				temps.put(df.parse(date), currPress);
+		    			break;
+		    		
+		    		case 2:
+		    			if(timediff >= 8 && timediff <= 14)
+		    				temps.put(df.parse(date), currPress);
+		    			break;
+		    		
+					default:
+						break;
+				}
 				
 				currPress = Double.parseDouble(nextLine[4]);
 				date = nextLine[1];
@@ -133,7 +183,28 @@ public class LineChartPressure extends JFrame {
     	CSVReader reader = new CSVReader(new FileReader("ekologia.csv"));
     	
     	while ((nextLine = reader.readNext()) != null) {
-    		temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[4]));
+    		long timediff = TimeUnit.DAYS.convert(df.parse(nextLine[1]).getTime() - df.parse(nextLine[0]).getTime(), TimeUnit.MILLISECONDS);
+
+    		switch(type){
+	    		case 0:
+	    			if(timediff <= 3)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[4]));
+	    			break;
+	    		
+	    		case 1:
+	    			if(timediff >= 4 && timediff <= 7)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[4]));
+	    			break;
+	    		
+	    		case 2:
+	    			if(timediff >= 8 && timediff <= 14)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[4]));
+	    			break;
+	    		
+				default:
+					break;
+			}
+    		
         }
     	
     	reader.close();
@@ -145,9 +216,9 @@ public class LineChartPressure extends JFrame {
         
         // create the chart...
         final JFreeChart chart = ChartFactory.createLineChart(
-            "Porï¿½wnanie danych - Ciï¿½nienie", 
-            "Dzieï¿½",             
-            "Ciï¿½nienie [hPa]",              
+            "Porównanie danych - Ciœnienie", 
+            "Dzieñ",             
+            "Ciœnienie [hPa]",              
             dataset,           
             PlotOrientation.VERTICAL,
             true,                  

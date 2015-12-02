@@ -24,19 +24,14 @@ import javax.imageio.ImageIO;
 public class HTMLParserMeteo {
 	public HTMLParserMeteo() {
 		FileWriter fileWriter = null;
-		String timestamp;
 		int hour = getCurrentHour();
-		timestamp = (hour<12)?getYesterdayDateString():getCurrentTimeStamp();
 		hour = ((hour/12*12)+12)%24;  // dla hour 0-11 zwraca 12;        dla hour 12-23 zwraca 0
-		String zera ="";
-		if (hour==0)
-			zera+="0";
 		
 		
 		try {
 			fileWriter = new FileWriter("meteo.csv", true);
 			URL url = new URL("http://www.meteo.pl/metco/mgram_pict.php?ntype=2n&fdate=2015113000&row=151&col=91&lang=pl");
-			//URL url = new URL("http://www.meteo.pl/metco/mgram_pict.php?ntype=2n&fdate="+timestamp+hour+zera+"&row=151&col=91&lang=pl");
+
 			InputStream in = new BufferedInputStream(url.openStream());
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			byte[] buf = new byte[1024];
@@ -53,8 +48,6 @@ public class HTMLParserMeteo {
 			fos.close();
 			BufferedImage img = null;
 			img = ImageIO.read(new File("obrazek.png"));
-			int szerokosc = img.getWidth();
-			int wysokosc = img.getHeight();
 			
 			int x1=0,x2=0, x3=0, x4=0;
 			if (hour ==12){

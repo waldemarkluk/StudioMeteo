@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
@@ -29,9 +30,11 @@ import com.opencsv.CSVReader;
 
 public class LineChartTemp extends JFrame {
 	private static final long serialVersionUID = -4619093118842552184L;
-
-    public LineChartTemp(final String title) throws IOException, ParseException {
+	int type = 0;
+	
+    public LineChartTemp(final String title, int type) throws IOException, ParseException {
         super(title);
+        this.type = type;
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         final CategoryDataset dataset = createDataset();
         final JFreeChart chart = createChart(dataset);
@@ -61,6 +64,11 @@ public class LineChartTemp extends JFrame {
 	        	dataset.addValue(ekoTemp.get(x), series2, format.format(x));
 	        	dataset.addValue(pogTemp.get(x), series3, format.format(x));
 	        	dataset.addValue(metTemp.get(x), series4, format.format(x));
+	        	
+	        	System.out.print(String.format("B³¹d bezwzglêdny ekologia dla temperatury (%td.%tm.%tY): %f%n", x, x, x, Math.abs(actTemp.get(x) - ekoTemp.get(x))));
+	        	System.out.print(String.format("B³¹d bezwzglêdny pogodynka dla temperatury (%td.%tm.%tY): %f%n",x , x, x, Math.abs(actTemp.get(x) - pogTemp.get(x))));
+	        	System.out.print(String.format("B³¹d bezwzglêdny meteo dla temperatury (%td.%tm.%tY): %f%n------------------------------------%n",x , x, x, Math.abs(actTemp.get(x) - metTemp.get(x))));
+	        	
         	}
         }
         
@@ -89,7 +97,27 @@ public class LineChartTemp extends JFrame {
 		String [] nextLine;
 		
     	while ((nextLine = reader.readNext()) != null) {
-    		temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[3]));
+    		long timediff = TimeUnit.DAYS.convert(df.parse(nextLine[1]).getTime() - df.parse(nextLine[0]).getTime(), TimeUnit.MILLISECONDS);
+
+    		switch(type){
+	    		case 0:
+	    			if(timediff <= 3)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[3]));
+	    			break;
+	    		
+	    		case 1:
+	    			if(timediff >= 4 && timediff <= 7)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[3]));
+	    			break;
+	    		
+	    		case 2:
+	    			if(timediff >= 8 && timediff <= 14)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[3]));
+	    			break;
+	    		
+				default:
+					break;
+			}
         }
     	
     	reader.close();
@@ -105,16 +133,38 @@ public class LineChartTemp extends JFrame {
     	nextLine = reader.readNext();
     	Double currTemp = Double.parseDouble(nextLine[3]);
     	String date = nextLine[1];
-    			
+    	Date thisdate = df.parse(nextLine[0]);
+    	
     	while ((nextLine = reader.readNext()) != null) {
     		
 			if(nextLine[1].equals(date)){
-    			if(Double.parseDouble(nextLine[3]) > currTemp)
+    			if(Double.parseDouble(nextLine[3]) > currTemp){
     				currTemp = Double.parseDouble(nextLine[3]);
+    				thisdate = df.parse(nextLine[0]);	
+    			}
 			}
 			else{
-				temps.put(df.parse(date), currTemp);
-				
+				long timediff = TimeUnit.DAYS.convert(df.parse(date).getTime() - thisdate.getTime(), TimeUnit.MILLISECONDS);
+
+	    		switch(type){
+		    		case 0:
+		    			if(timediff <= 3)
+		    				temps.put(df.parse(date), currTemp);
+		    			break;
+		    		
+		    		case 1:
+		    			if(timediff >= 4 && timediff <= 7)
+		    				temps.put(df.parse(date), currTemp);
+		    			break;
+		    		
+		    		case 2:
+		    			if(timediff >= 8 && timediff <= 14)
+		    				temps.put(df.parse(date), currTemp);
+		    			break;
+		    		
+					default:
+						break;
+				}
 				currTemp = Double.parseDouble(nextLine[3]);
 				date = nextLine[1];
 			}
@@ -133,7 +183,28 @@ public class LineChartTemp extends JFrame {
     	CSVReader reader = new CSVReader(new FileReader("ekologia.csv"));
     	
     	while ((nextLine = reader.readNext()) != null) {
-    		temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[3]));
+    		long timediff = TimeUnit.DAYS.convert(df.parse(nextLine[1]).getTime() - df.parse(nextLine[0]).getTime(), TimeUnit.MILLISECONDS);
+
+    		switch(type){
+	    		case 0:
+	    			if(timediff <= 3)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[3]));
+	    			break;
+	    		
+	    		case 1:
+	    			if(timediff >= 4 && timediff <= 7)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[3]));
+	    			break;
+	    		
+	    		case 2:
+	    			if(timediff >= 8 && timediff <= 14)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[3]));
+	    			break;
+	    		
+				default:
+					break;
+			}
+    		
         }
     	
     	reader.close();
@@ -145,8 +216,8 @@ public class LineChartTemp extends JFrame {
         
         // create the chart...
         final JFreeChart chart = ChartFactory.createLineChart(
-            "Porï¿½wnanie danych - Temperatura", 
-            "Dzieï¿½",             
+            "Porównanie danych - Temperatura", 
+            "Dzieñ",             
             "Temp. [\u00B0C]",              
             dataset,           
             PlotOrientation.VERTICAL,

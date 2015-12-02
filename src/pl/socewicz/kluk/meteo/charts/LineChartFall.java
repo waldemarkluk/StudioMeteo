@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
@@ -29,9 +30,10 @@ import com.opencsv.CSVReader;
 
 public class LineChartFall extends JFrame {
 	private static final long serialVersionUID = -4619093118842552184L;
-
-    public LineChartFall(final String title) throws IOException, ParseException {
+	int type = 0;
+    public LineChartFall(final String title, int type) throws IOException, ParseException {
         super(title);
+        this.type = type;
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         final CategoryDataset dataset = createDataset();
         final JFreeChart chart = createChart(dataset);
@@ -49,17 +51,18 @@ public class LineChartFall extends JFrame {
 
         final Map<Date, Double> ekoFall = getEkologiaFall();    
         final Map<Date, Double> actFall = getActualFall();
-        
         final Map<Date, Double> metFall = getMeteoFall();
         
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
         for(Date x : actFall.keySet()){
-        	if(actFall.get(x) != null && ekoFall.get(x) != null){
+        	if((actFall.get(x) != null && ekoFall.get(x) != null)  ){
 	        	dataset.addValue(actFall.get(x), series1, format.format(x));
 	        	dataset.addValue(ekoFall.get(x), series2, format.format(x));
-
 	        	dataset.addValue(metFall.get(x), series4, format.format(x));
+	        	
+	        	System.out.print(String.format("B³¹d bezwzglêdny meteo dla opadu (%td.%tm.%tY): %f%n",x ,x, x, Math.abs(actFall.get(x) - metFall.get(x))));
+	        	System.out.print(String.format("B³¹d bezwzglêdny ekologia dla opadu (%td.%tm.%tY): %f%n------------------------------------%n",x ,x, x, Math.abs(actFall.get(x) - ekoFall.get(x))));
         	}
         }
         
@@ -88,7 +91,28 @@ public class LineChartFall extends JFrame {
 		String [] nextLine;
 		
     	while ((nextLine = reader.readNext()) != null) {
-    		temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6]));
+    		long timediff = TimeUnit.DAYS.convert(df.parse(nextLine[1]).getTime() - df.parse(nextLine[0]).getTime(), TimeUnit.MILLISECONDS);
+
+    		switch(type){
+	    		case 0:
+	    			if(timediff <= 3)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6]));
+	    			break;
+	    		
+	    		case 1:
+	    			if(timediff >= 4 && timediff <= 7)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6]));
+	    			break;
+	    		
+	    		case 2:
+	    			if(timediff >= 8 && timediff <= 14)
+	    				temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6]));
+	    			break;
+	    		
+				default:
+					break;
+			}
+    		
         }
     	
     	reader.close();
@@ -104,10 +128,41 @@ public class LineChartFall extends JFrame {
     	CSVReader reader = new CSVReader(new FileReader("ekologia.csv"));
     	
     	while ((nextLine = reader.readNext()) != null) {
-    		if (nextLine[6].contains("Ã·"))
-    			temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6].split("Ã·")[1]));
-    		else
-    			temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6]));
+    		long timediff = TimeUnit.DAYS.convert(df.parse(nextLine[1]).getTime() - df.parse(nextLine[0]).getTime(), TimeUnit.MILLISECONDS);
+
+    		switch(type){
+	    		case 0:
+	    			if(timediff <= 3){
+	    				if (nextLine[6].contains("Ã·"))
+	    	    			temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6].split("Ã·")[1]));
+	    	    		else
+	    	    			temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6]));
+	    			}
+	    			break;
+	    		
+	    		case 1:
+	    			if(timediff >= 4 && timediff <= 7){
+	    				if (nextLine[6].contains("Ã·"))
+	    	    			temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6].split("Ã·")[1]));
+	    	    		else
+	    	    			temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6]));
+	    			}
+	    			break;
+	    		
+	    		case 2:
+	    			if(timediff >= 8 && timediff <= 14){
+	    				if (nextLine[6].contains("Ã·"))
+	    	    			temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6].split("Ã·")[1]));
+	    	    		else
+	    	    			temps.put(df.parse(nextLine[1]), Double.parseDouble(nextLine[6]));
+	    			}
+	    			break;
+	    		
+				default:
+					break;
+			}
+    		
+    		
         }
     	
     	reader.close();
@@ -119,8 +174,8 @@ public class LineChartFall extends JFrame {
         
         // create the chart...
         final JFreeChart chart = ChartFactory.createLineChart(
-            "Porï¿½wnanie danych - Opad", 
-            "Dzieï¿½",             
+            "Porównanie danych - Opad", 
+            "Dzieñ",             
             "Opad [mm/h]",              
             dataset,           
             PlotOrientation.VERTICAL,
