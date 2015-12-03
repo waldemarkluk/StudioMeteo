@@ -23,6 +23,10 @@ import pl.socewicz.kluk.meteo.charts.LineChartFall;
 import pl.socewicz.kluk.meteo.charts.LineChartPressure;
 import pl.socewicz.kluk.meteo.charts.LineChartTemp;
 import pl.socewicz.kluk.meteo.charts.LineChartWind;
+import pl.socewicz.kluk.util.HTMLParserEkologia;
+import pl.socewicz.kluk.util.HTMLParserMeteo;
+import pl.socewicz.kluk.util.HTMLParserPogodynka;
+import pl.socewicz.kluk.util.HTMLParserPomiary;
 
 public class MainWindow extends ApplicationWindow {
 	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
@@ -57,6 +61,15 @@ public class MainWindow extends ApplicationWindow {
 		formToolkit.paintBordersFor(scrolledComposite);
 		
 		Button btnSync = new Button(container, SWT.NONE);
+		btnSync.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				new HTMLParserEkologia();
+				new HTMLParserMeteo();
+				new HTMLParserPogodynka();
+				new HTMLParserPomiary();
+			}
+		});
 		btnSync.setBounds(109, 10, 231, 60);
 		formToolkit.adapt(btnSync, true, true);
 		btnSync.setText("Zbierz dane");

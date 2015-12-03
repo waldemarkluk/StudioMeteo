@@ -31,43 +31,23 @@ public class HTMLParserPomiary {
     private String charset = "UTF-8";
     private String loginQuery = "";
 
-	FileWriter fileWriter = new FileWriter("pomiary.csv", true);
+	FileWriter fileWriter = null;
     
-    public static void main(String[] args) throws Exception {
-    	@SuppressWarnings("unused") HTMLParserPomiary http = new HTMLParserPomiary();
-    }
-
-    
-    public HTMLParserPomiary() throws Exception {
-
-        //CookieHandler się buguje nie włączać!!
-        //CookieHandler.setDefault(new CookieManager());
-        loginQuery = String.format("login=%s&password=%s",
-                URLEncoder.encode(login, charset),
-                URLEncoder.encode(pass, charset));
-        sendPost(url, loginQuery);
-        //System.out.println(GetPageContent(url));
-        //przyklad pobierania strony z plikiem
-        /*
-        fromDate:%s&
-        toDate:%s&
-        strefa:%s&
-        separator:%s&
-        id_data_type[]:%s&
-        calculateValues[]:%s&
-        calculateValues[]:%s&
-        calculateValues[]:%s&
-        subPeriod:%s&
-        unique:%s
-         */
-
-        //System.out.println(getCRSFToken());
-        getFile();
+    public HTMLParserPomiary(){
+        
         try {
+        	fileWriter = new FileWriter("pomiary.csv", true);
+        	loginQuery = String.format("login=%s&password=%s",
+                    URLEncoder.encode(login, charset),
+                    URLEncoder.encode(pass, charset));
+            sendPost(url, loginQuery);
+            getFile();
 			fileWriter.flush();
 			fileWriter.close();
 		}catch (IOException e) {
 			System.out.println("Error while flushing/closing fileWriter !!!");
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
     }
